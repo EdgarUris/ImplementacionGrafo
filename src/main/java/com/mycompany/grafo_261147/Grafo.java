@@ -326,6 +326,11 @@ public class Grafo<T> {
         boolean[] visitado = new boolean[vertices.size()];
         System.out.println("Busqueda en profundidad desde " +String.valueOf(verticeInicio));
         BusquedaEnProfundidadRec(verticeInicio, visitado);
+        for (int i = 0; i < vertices.size(); i++) {
+            if(visitado[i] == false){
+                BusquedaEnProfundidadRec(vertices.get(i), visitado);
+            }
+        }
     }
     
     public void BusquedaEnProfundidadRec(T actual, boolean[] visitado) throws Exception{

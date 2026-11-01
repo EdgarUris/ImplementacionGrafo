@@ -20,6 +20,8 @@ public class Grafo_261147 {
         Nodo n6 = new Nodo(6);
         Nodo n7 = new Nodo(7);
         Nodo n8 = new Nodo(8);
+        Nodo n9 = new Nodo(9);
+        Nodo n10 = new Nodo(10);
         
         
 //        System.out.println("Prueba grafo no dirigido ponderado");
@@ -125,6 +127,8 @@ public class Grafo_261147 {
         gndp.insertarVertice(n6);
         gndp.insertarVertice(n7);
         gndp.insertarVertice(n8);
+        gndp.insertarVertice(n9);
+        gndp.insertarVertice(n10);
         
         gndp.insertarArista(n1, n2, 1);
         gndp.insertarArista(n2, n3, 1);
@@ -135,10 +139,11 @@ public class Grafo_261147 {
         gndp.insertarArista(n5, n6, 1);
         gndp.insertarArista(n6, n7, 1);
         gndp.insertarArista(n6, n8, 1);
+        gndp.insertarArista(n9, n10, 1);
         
         //gndp.BusquedaEnAnchura(n6);
         
-        gndp.BusquedaEnProfundidad(n5);
+        gndp.BusquedaEnProfundidad(n9);
         
         
         
