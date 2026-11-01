@@ -324,7 +324,7 @@ public class Grafo<T> {
     
     public void BusquedaEnProfundidad(T verticeInicio) throws Exception{
         boolean[] visitado = new boolean[vertices.size()];
-        System.out.println("Busqueda en profundidad desde " +String.valueOf(verticeInicio));
+        System.out.println("Busqueda en profundidad empezando desde " +String.valueOf(verticeInicio));
         BusquedaEnProfundidadRec(verticeInicio, visitado);
         for (int i = 0; i < vertices.size(); i++) {
             if(visitado[i] == false){

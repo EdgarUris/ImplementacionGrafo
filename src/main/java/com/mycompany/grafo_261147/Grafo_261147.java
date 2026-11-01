@@ -141,9 +141,11 @@ public class Grafo_261147 {
         gndp.insertarArista(n6, n8, 1);
         gndp.insertarArista(n9, n10, 1);
         
-        //gndp.BusquedaEnAnchura(n6);
+        gndp.BusquedaEnAnchura(n6);
         
-        gndp.BusquedaEnProfundidad(n9);
+        System.out.println("\n");
+        
+        gndp.BusquedaEnProfundidad(n6);
         
         
         
