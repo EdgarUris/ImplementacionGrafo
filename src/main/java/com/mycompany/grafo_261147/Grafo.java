@@ -7,8 +7,10 @@ package com.mycompany.grafo_261147;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /*
  * @param <T> tipo de dato almacenado en los vertices
@@ -209,7 +211,8 @@ public class Grafo<T> {
         int i = obtenerIndice(origen);
         int j = obtenerIndice(destino);
         if (i == j){
-            throw new Exception("No se permiten bucles (aristas de un vértice a sí mismo)");
+            matriz[i][j] = peso;
+            return true;
         }
         
         //mejor explicación de este metodo en el documento
@@ -293,6 +296,49 @@ public class Grafo<T> {
         }
         return true;
     }
+    
+    // recorridos BFS y DFS
+    
+    public void BusquedaEnAnchura(T verticeInicio) throws Exception{
+        boolean visitado[] = new boolean[vertices.size()];
+        Queue<T> cola = new LinkedList<>();
+        
+        int indiceInicio = posiciones.get(verticeInicio);
+        visitado[indiceInicio] = true;
+        
+        cola.add(verticeInicio);
+        System.out.println("Busqueda en anchura empezando desde: " + verticeInicio.toString());
+        
+        while(!cola.isEmpty()){
+            T actual = cola.poll();
+            System.out.println(String.valueOf(actual));
+            
+            for(T vecino : getAdyacentesDe(actual)){
+                if(!visitado[posiciones.get(vecino)]){
+                    visitado[posiciones.get(vecino)] = true;
+                    cola.add(vecino);
+                }
+            }
+        }      
+    }
+    
+    public void BusquedaEnProfundidad(T verticeInicio) throws Exception{
+        boolean[] visitado = new boolean[vertices.size()];
+        System.out.println("Busqueda en profundidad desde " +String.valueOf(verticeInicio));
+        BusquedaEnProfundidadRec(verticeInicio, visitado);
+    }
+    
+    public void BusquedaEnProfundidadRec(T actual, boolean[] visitado) throws Exception{
+        visitado[posiciones.get(actual)] = true;
+        System.out.println(String.valueOf(actual));
+        
+        for(T vecino : getAdyacentesDe(actual)){
+            if(!visitado[posiciones.get(vecino)]){
+                BusquedaEnProfundidadRec(vecino, visitado);
+            }
+        }
+    }
+    
     
     public double getPeso(T origen, T destino) {
         Integer i = posiciones.get(origen);

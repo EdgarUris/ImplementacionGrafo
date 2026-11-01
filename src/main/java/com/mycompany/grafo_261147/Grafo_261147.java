@@ -22,94 +22,126 @@ public class Grafo_261147 {
         Nodo n8 = new Nodo(8);
         
         
-        System.out.println("Prueba grafo no dirigido ponderado");
+//        System.out.println("Prueba grafo no dirigido ponderado");
+//        
+//        //crear y establecer tipo de grafo
+//        Grafo gndp = new Grafo(false, true);
+//        
+//        //insertar vertices
+//        System.out.println("Insertando vertices");
+//        gndp.insertarVertice(n1);
+//        gndp.insertarVertice(n2);
+//        gndp.insertarVertice(n3);
+//        gndp.insertarVertice(n4);
+//        
+//        System.out.println("Vertices en el grafo: ");
+//        gndp.imprimirVertices();
+//        
+//        System.out.println("\n\n");
+//        
+//        //eliminar vertice
+//        System.out.println("Eliminando vertice n4");
+//        gndp.eliminarVertice(n4);
+//        
+//        System.out.println("Vertices en el grafo despues de eliminar n4");
+//        gndp.imprimirVertices();
+//        
+//        System.out.println("\n\n");
+//        
+//        //insertar arista con ponderación
+//        System.out.println("Insertando aristas n1 a n2, n2 a n3 y n3 a n1");
+//        gndp.insertarArista(n1, n2, 3.0);
+//        gndp.insertarArista(n2, n3, 2.0);
+//        gndp.insertarArista(n3, n1, 4.0);
+//        
+//        System.out.println("Mostrando aristas del grafo");
+//        //matriz de adyacencia del grafo
+//        gndp.imprimirMatrizAdyacencia();
+//        
+//        System.out.println("\n\n");
+//        
+//        //eliminar arista
+//        System.out.println("Eliminando arista de n3 a n1");
+//        gndp.eliminarArista(n3, n1);
+//        gndp.imprimirMatrizAdyacencia();
+//
+//        System.out.println("\n\n");
+//        
+//        //actualizar peso de arista
+//        System.out.println("Actualizando peso de arista n2 a n3 de 3 a 2.5");
+//        gndp.actualizarPeso(n2, n3, 2.5);
+//        gndp.imprimirMatrizAdyacencia();
+//
+//        System.out.println("\n\n");
+//        
+//        System.out.println("\n\n");
+//        
+//        //imprimir vertices adyacentes a n1
+//        System.out.println("Vertices adyacentes a n1");
+//        gndp.imprimirAdyacentes(n1);
+//        
+//        gndp.imprimirNumeroVerticesAristas();
+//        System.out.println("\n\n");
+//        
+//        
+//        
+//        System.out.println("Pruebas de grafo dirigido y no ponderado");
+//        
+//        Grafo gdnp = new Grafo(true, false);
+//        System.out.println("Insertando vertices n5, n6, n7, n8");
+//        
+//        gdnp.insertarVertice(n5);
+//        gdnp.insertarVertice(n6);
+//        gdnp.insertarVertice(n7);
+//        gdnp.insertarVertice(n8);
+//        
+//        System.out.println("Vertices en el grafo");
+//        gdnp.imprimirVertices();
+//        
+//        System.out.println("\n\n");
+//        
+//        System.out.println("Eliminando vertice n8");
+//        gdnp.eliminarVertice(n8);
+//        
+//        System.out.println("Insertando aristas");
+//        gdnp.insertarArista(n5, n6);
+//        gdnp.insertarArista(n6, n7);
+//        gdnp.insertarArista(n7, n5);
+//        
+//        System.out.println("Matriz de adyacencia");
+//        gdnp.imprimirMatrizAdyacencia();
+//        
+//        System.out.println("Eliminando todo para probar los recorridos");
+//        gndp.limpiar();
         
-        //crear y establecer tipo de grafo
+        System.out.println("Prueba de BFS y DFS");
         Grafo gndp = new Grafo(false, true);
         
-        //insertar vertices
-        System.out.println("Insertando vertices");
         gndp.insertarVertice(n1);
         gndp.insertarVertice(n2);
         gndp.insertarVertice(n3);
         gndp.insertarVertice(n4);
+        gndp.insertarVertice(n5);
+        gndp.insertarVertice(n6);
+        gndp.insertarVertice(n7);
+        gndp.insertarVertice(n8);
         
-        System.out.println("Vertices en el grafo: ");
-        gndp.imprimirVertices();
+        gndp.insertarArista(n1, n2, 1);
+        gndp.insertarArista(n2, n3, 1);
+        gndp.insertarArista(n3, n4, 1);
+        gndp.insertarArista(n2, n4, 1);
+        gndp.insertarArista(n3, n5, 1);
+        gndp.insertarArista(n4, n5, 1);
+        gndp.insertarArista(n5, n6, 1);
+        gndp.insertarArista(n6, n7, 1);
+        gndp.insertarArista(n6, n8, 1);
         
-        System.out.println("\n\n");
+        //gndp.BusquedaEnAnchura(n6);
         
-        //eliminar vertice
-        System.out.println("Eliminando vertice n4");
-        gndp.eliminarVertice(n4);
-        
-        System.out.println("Vertices en el grafo despues de eliminar n4");
-        gndp.imprimirVertices();
-        
-        System.out.println("\n\n");
-        
-        //insertar arista con ponderación
-        System.out.println("Insertando aristas n1 a n2, n2 a n3 y n3 a n1");
-        gndp.insertarArista(n1, n2, 3.0);
-        gndp.insertarArista(n2, n3, 2.0);
-        gndp.insertarArista(n3, n1, 4.0);
-        
-        System.out.println("Mostrando aristas del grafo");
-        //matriz de adyacencia del grafo
-        gndp.imprimirMatrizAdyacencia();
-        
-        System.out.println("\n\n");
-        
-        //eliminar arista
-        System.out.println("Eliminando arista de n3 a n1");
-        gndp.eliminarArista(n3, n1);
-        gndp.imprimirMatrizAdyacencia();
-
-        System.out.println("\n\n");
-        
-        //actualizar peso de arista
-        System.out.println("Actualizando peso de arista n2 a n3 de 3 a 2.5");
-        gndp.actualizarPeso(n2, n3, 2.5);
-        gndp.imprimirMatrizAdyacencia();
-
-        System.out.println("\n\n");
-        
-        System.out.println("\n\n");
-        
-        //imprimir vertices adyacentes a n1
-        System.out.println("Vertices adyacentes a n1");
-        gndp.imprimirAdyacentes(n1);
-        
-        gndp.imprimirNumeroVerticesAristas();
-        System.out.println("\n\n");
+        gndp.BusquedaEnProfundidad(n5);
         
         
         
-        System.out.println("Pruebas de grafo dirigido y no ponderado");
-        
-        Grafo gdnp = new Grafo(true, false);
-        System.out.println("Insertando vertices n5, n6, n7, n8");
-        
-        gdnp.insertarVertice(n5);
-        gdnp.insertarVertice(n6);
-        gdnp.insertarVertice(n7);
-        gdnp.insertarVertice(n8);
-        
-        System.out.println("Vertices en el grafo");
-        gdnp.imprimirVertices();
-        
-        System.out.println("\n\n");
-        
-        System.out.println("Eliminando vertice n8");
-        gdnp.eliminarVertice(n8);
-        
-        System.out.println("Insertando aristas");
-        gdnp.insertarArista(n5, n6);
-        gdnp.insertarArista(n6, n7);
-        gdnp.insertarArista(n7, n5);
-        
-        System.out.println("Matriz de adyacencia");
-        gdnp.imprimirMatrizAdyacencia();
         
         
         
