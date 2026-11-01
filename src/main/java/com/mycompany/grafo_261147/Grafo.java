@@ -333,7 +333,7 @@ public class Grafo<T> {
         }
     }
     
-    public void BusquedaEnProfundidadRec(T actual, boolean[] visitado) throws Exception{
+    private void BusquedaEnProfundidadRec(T actual, boolean[] visitado) throws Exception{
         visitado[posiciones.get(actual)] = true;
         System.out.println(String.valueOf(actual));
         
