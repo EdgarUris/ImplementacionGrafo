@@ -6,10 +6,12 @@
 package com.mycompany.grafo_261147;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 /*
@@ -342,6 +344,41 @@ public class Grafo<T> {
                 BusquedaEnProfundidadRec(vecino, visitado);
             }
         }
+    }
+    
+    public Double[] dijkstra(T vOrigen) throws Exception{
+        Double[] shortest = new Double[vertices.size()];
+        ArrayList<T> predecesor = new ArrayList<>();
+        
+        Arrays.fill(shortest, Double.MAX_VALUE);
+        for (T vertice : vertices) {
+            predecesor.add(null);
+        }
+        
+        shortest[posiciones.get(vOrigen)] = 0.0;
+        
+        Queue<T> cola = new LinkedList<>();
+        cola.add(vOrigen);
+        
+        for(T vertice : vertices){
+            cola.add(vertice);
+        }
+        
+        while(!cola.isEmpty()){
+            
+            T actual = cola.poll();
+            List<T> adyacentes = getAdyacentesDe(actual);
+            for (T adyacente : adyacentes){
+                int x = posiciones.get(actual);
+                int y = posiciones.get(adyacente);
+                if(shortest[x] + matriz[x][y] > shortest[y]){
+                    shortest[y] = shortest[x] + matriz[x][y];
+                    predecesor.set(y, actual);
+                }
+            }
+            
+        }
+        return shortest;
     }
     
     
