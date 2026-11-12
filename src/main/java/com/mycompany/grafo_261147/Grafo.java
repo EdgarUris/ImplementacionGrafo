@@ -345,7 +345,8 @@ public class Grafo<T> {
             }
         }
     }
-    
+
+    //todo dijkstra
     public Double[] dijkstra(T vOrigen) throws Exception{
         Double[] shortest = new Double[vertices.size()];
         ArrayList<T> predecesor = new ArrayList<>();
@@ -354,31 +355,74 @@ public class Grafo<T> {
         for (T vertice : vertices) {
             predecesor.add(null);
         }
-        
         shortest[posiciones.get(vOrigen)] = 0.0;
-        
-        Queue<T> cola = new LinkedList<>();
-        cola.add(vOrigen);
-        
-        for(T vertice : vertices){
-            cola.add(vertice);
-        }
-        
-        while(!cola.isEmpty()){
-            
-            T actual = cola.poll();
+
+        List<T> verticesDijkstra = new ArrayList<>();
+        verticesDijkstra.addAll(vertices);
+
+        while(!verticesDijkstra.isEmpty()) {
+            int indiceShortestMenor = 0;
+            for(int i = 0; i < verticesDijkstra.size()-1; i++){
+                if(shortest[i] < shortest[i+1]){
+                    indiceShortestMenor = i+1;
+                }
+            }
+
+            T actual = verticesDijkstra.get(indiceShortestMenor);
             List<T> adyacentes = getAdyacentesDe(actual);
             for (T adyacente : adyacentes){
+               Double pesoArista = getPeso(actual, adyacente);
                 int x = posiciones.get(actual);
                 int y = posiciones.get(adyacente);
-                if(shortest[x] + matriz[x][y] > shortest[y]){
-                    shortest[y] = shortest[x] + matriz[x][y];
+                if(shortest[x] + pesoArista < shortest[y]){
+                    shortest[y] = shortest[x] + pesoArista;
                     predecesor.set(y, actual);
                 }
             }
             
         }
         return shortest;
+    }
+
+    //ordenamiento topologico
+    public List<T> ordenamientoTopologico() throws Exception{
+        if(!tipo.esDirigido()){
+            throw new Exception("El ordenamiento topologico solo esta disponible para grafos dirigidos");
+        }
+
+        int[] gradoEntrada = new int[vertices.size()];
+        Arrays.fill(gradoEntrada, 0);
+
+        for(int i = 0; i < vertices.size(); i++){
+            gradoEntrada[i] = getGradoEntrada(vertices.get(i));
+        }
+
+        List<T> siguiente = new ArrayList<>();
+        List<T> ordenLineal = new ArrayList<>();
+
+        for(int i = 0; i < gradoEntrada.length; i++){
+            if(gradoEntrada[i] == 0){
+                siguiente.add(vertices.get(i));
+            }
+        }
+
+        while(!siguiente.isEmpty()){
+            T actual = siguiente.getFirst();
+            siguiente.removeFirst();
+
+            ordenLineal.addLast(actual);
+
+            List<T> vecinos = getAdyacentesDe(actual);
+            for(T vecino : vecinos){
+                int posVecino = posiciones.get(vecino);
+                gradoEntrada[posVecino] -= 1;
+
+                if(gradoEntrada[posVecino] == 0) {
+                    siguiente.add(vecino);
+                }
+            }
+        }
+        return ordenLineal;
     }
     
     

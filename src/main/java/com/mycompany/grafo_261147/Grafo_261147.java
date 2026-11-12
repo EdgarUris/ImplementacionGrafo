@@ -6,6 +6,8 @@
 package com.mycompany.grafo_261147;
 
 
+import java.util.List;
+
 /**
  * @author EdgarUrias
  */
@@ -13,7 +15,7 @@ public class Grafo_261147 {
 
     public static void main(String[] args) throws Exception {
         
-        probarGrafoDirigidoPonderado();
+        probarOrdenamientoTopologico();
     }
     
     private static void probarGrafoDirigidoNoPonderado() throws Exception{
@@ -194,5 +196,48 @@ public class Grafo_261147 {
             System.out.println(distancias[i] + "");
         }
         
+    }
+
+    private static void probarOrdenamientoTopologico() throws Exception {
+        Grafo gd = new Grafo(true, false);
+
+        Nodo a = new Nodo("A");
+        Nodo b = new Nodo("B");
+        Nodo c = new Nodo("C");
+        Nodo d = new Nodo("D");
+        Nodo e = new Nodo("E");
+        Nodo f = new Nodo("F");
+        Nodo g = new Nodo("G");
+        Nodo h = new Nodo("H");
+        Nodo i = new Nodo("I");
+        Nodo j = new Nodo("J");
+
+        gd.insertarVertice(a);
+        gd.insertarVertice(b);
+        gd.insertarVertice(c);
+        gd.insertarVertice(d);
+        gd.insertarVertice(e);
+        gd.insertarVertice(f);
+        gd.insertarVertice(g);
+        gd.insertarVertice(h);
+        gd.insertarVertice(i);
+        gd.insertarVertice(j);
+
+        gd.insertarArista(a, d);
+        gd.insertarArista(b, d);
+        gd.insertarArista(c, f);
+        gd.insertarArista(d, f);
+        gd.insertarArista(d, e);
+        gd.insertarArista(e, g);
+        gd.insertarArista(e, h);
+        gd.insertarArista(h, j);
+        gd.insertarArista(f, i);
+
+        List<Nodo> orden = gd.ordenamientoTopologico();
+
+        for(Nodo n : orden){
+            System.out.println(n);
+        }
+
     }
 }
