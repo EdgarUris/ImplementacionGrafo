@@ -424,6 +424,36 @@ public class Grafo<T> {
         }
         return ordenLineal;
     }
+
+    public double[] caminosMasCortosDAG(T vInicio) throws Exception{
+        if(!tipo.esDirigido()){
+            throw new Exception("Este metodo solo es para grafos dirigidos");
+        }
+
+        List<T> ordenLineal = ordenamientoTopologico();
+        double shortest[] = new double[ordenLineal.size()];
+
+        List<T> predecesores = new ArrayList<>();
+        Arrays.fill(shortest, Double.MAX_VALUE);
+        shortest[posiciones.get(vInicio)] = 0;
+
+        for(int i = 0; i < shortest.length; i++){
+            predecesores.add(null);
+        }
+
+        for(T actual : ordenLineal){
+            List<T> vecinos = getAdyacentesDe(actual);
+            int posActual = posiciones.get(actual);
+            for(T vecino : vecinos){
+                int posVecino = posiciones.get(vecino);
+                if(shortest[posActual] + getPeso(actual, vecino) < shortest[posVecino]){
+                    shortest[posVecino] = shortest[posActual] + getPeso(actual, vecino);
+                    predecesores.set(posVecino, actual);
+                }
+            }
+        }
+        return shortest;
+    }
     
     
     public double getPeso(T origen, T destino) {

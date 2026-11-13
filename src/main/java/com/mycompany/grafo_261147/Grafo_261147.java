@@ -199,7 +199,7 @@ public class Grafo_261147 {
     }
 
     private static void probarOrdenamientoTopologico() throws Exception {
-        Grafo gd = new Grafo(true, false);
+        Grafo gd = new Grafo(true, true);
 
         Nodo a = new Nodo("A");
         Nodo b = new Nodo("B");
@@ -223,20 +223,33 @@ public class Grafo_261147 {
         gd.insertarVertice(i);
         gd.insertarVertice(j);
 
-        gd.insertarArista(a, d);
-        gd.insertarArista(b, d);
-        gd.insertarArista(c, f);
-        gd.insertarArista(d, f);
-        gd.insertarArista(d, e);
-        gd.insertarArista(e, g);
-        gd.insertarArista(e, h);
-        gd.insertarArista(h, j);
-        gd.insertarArista(f, i);
+        gd.insertarArista(a, d, 3);
+        gd.insertarArista(b, d, 6);
+        gd.insertarArista(c, f, 6);
+        gd.insertarArista(d, f, 3);
+        gd.insertarArista(d, e, 5);
+        gd.insertarArista(e, g, 3);
+        gd.insertarArista(e, h, 2);
+        gd.insertarArista(h, j, 5);
+        gd.insertarArista(f, i, 1);
+        gd.insertarArista(i, j, 2);
+        gd.insertarArista(d, h, 6);
 
         List<Nodo> orden = gd.ordenamientoTopologico();
 
         for(Nodo n : orden){
             System.out.println(n);
+        }
+
+        double[] caminosMasCortos = gd.caminosMasCortosDAG(a);
+
+        System.out.println("Caminos mas cortos desde el nodo: "+a);
+        for(int v = 0; v < caminosMasCortos.length; v++){
+            if(caminosMasCortos[v] == Double.MAX_VALUE){
+                System.out.println(orden.get(v) + ": nodo inalcanzable");
+            }else {
+                System.out.println(orden.get(v) + ": " + caminosMasCortos[v]);
+            }
         }
 
     }
