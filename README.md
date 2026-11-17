@@ -6,7 +6,6 @@ Este proyecto implementa un grafo genérico: sus vértices pueden ser, por ejemp
 
 - Java 23
 - Maven
-- 
 
 ## Crear un grafo
 
@@ -27,8 +26,9 @@ También se puede usar el constructor con dos opciones:
 Grafo<String> dirigidoPonderado = new Grafo<>(true, true);
 Grafo<String> noDirigidoSinPesos = new Grafo<>(false, false);
 ```
-
-Si se usa `new Grafo<>()` sin opciones, se crea un grafo no dirigido y sin pesos.
+El primer valor representa si será dirigido o no, true para dirigido, false para no dirigido.
+El segundo valor representa si será ponderado o no, true para ponderado, false para no ponderado.
+Si se usa `new Grafo<>()` sin opciones, se crea un grafo no dirigido y no ponderado.
 
 ## Agregar y quitar vértices
 
@@ -96,7 +96,7 @@ Se ejecuta con `BusquedaEnAnchura`:
 grafo.BusquedaEnAnchura("A");
 ```
 
-BFS explora primero los vecinos más cercanos al punto de inicio y luego continúa con los que están más lejos. Es útil para encontrar cuántos pasos separan dos vértices, revisar qué partes del grafo se pueden alcanzar o explorar conexiones por niveles. Este método imprime los vértices alcanzables desde el inicio.
+BFS explora primero los vecinos más cercanos al punto de inicio (en este caso "A") y luego continúa con los que están más lejos. Es útil para encontrar cuántos pasos separan dos vértices, revisar qué partes del grafo se pueden alcanzar o explorar conexiones por niveles.
 
 ### DFS (búsqueda en profundidad)
 
@@ -128,14 +128,14 @@ Las distancias aparecen en el mismo orden que `obtenerVertices()`. Es útil para
 
 ### Ordenamiento topológico
 
-Se ejecuta con `ordenamientoTopologico`, que devuelve una lista de vértices:
+Se ejecuta con `ordenamientoTopologico`, que devuelve una lista de vértices en la cual u va antes que v:
 
 ```java
 List<String> orden = grafo.ordenamientoTopologico();
 System.out.println(orden);
 ```
 
-Es útil para ordenar tareas que tienen dependencias: si una tarea debe hacerse antes que otra, aparecerá primero en la lista. Solo tiene sentido para grafos dirigidos sin ciclos (DAG). Si el grafo tiene ciclos, no existe un orden que satisfaga todas las dependencias; este método puede devolver una lista incompleta en ese caso.
+Es útil para ordenar tareas que tienen dependencias: si una tarea debe hacerse antes que otra, aparecerá primero en la lista. Solo tiene sentido para grafos dirigidos sin ciclos (DAG). Si el grafo tiene ciclos, no existe un orden que satisfaga todas las dependencias (no he puesto algoritmos para detectar ciclos) este método puede devolver una lista incompleta en ese caso.
 
 ### Caminos más cortos en un DAG
 
@@ -154,3 +154,8 @@ for (int i = 0; i < distanciasDAG.length; i++) {
 ```
 
 El arreglo también sigue el orden de `obtenerVertices()`. Este método sirve para buscar rutas de menor costo cuando las conexiones forman un DAG; a diferencia de Dijkstra, puede trabajar con pesos negativos, siempre que el grafo no tenga ciclos. Los vértices inalcanzables conservan `Double.MAX_VALUE`.
+
+## Pendientes
+
+- Algoritmos de Kruskal y BST (para un proyecto)
+- Detección de ciclos en grafos dirigidos
