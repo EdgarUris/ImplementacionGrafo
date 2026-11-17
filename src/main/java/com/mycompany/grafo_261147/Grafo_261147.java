@@ -15,7 +15,7 @@ public class Grafo_261147 {
 
     public static void main(String[] args) throws Exception {
         
-        probarOrdenamientoTopologico();
+        probarGrafoDirigidoPonderado();
     }
     
     private static void probarGrafoDirigidoNoPonderado() throws Exception{
@@ -191,7 +191,7 @@ public class Grafo_261147 {
         gdp.insertarArista(x, s, 7.0);
         
 
-        Double[] distancias = gdp.dijkstra(y);
+        Double[] distancias = gdp.dijkstra(z);
         for (int i = 0; i < distancias.length; i++) {
             System.out.println(distancias[i] + "");
         }

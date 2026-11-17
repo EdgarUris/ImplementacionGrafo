@@ -346,8 +346,10 @@ public class Grafo<T> {
         }
     }
 
-    //todo dijkstra
     public Double[] dijkstra(T vOrigen) throws Exception{
+        if(!tipo.esDirigido()){
+            throw new Exception("Dijsktra solo esta disponible para grafos dirigidos");
+        }
         Double[] shortest = new Double[vertices.size()];
         ArrayList<T> predecesor = new ArrayList<>();
         
@@ -362,13 +364,16 @@ public class Grafo<T> {
 
         while(!verticesDijkstra.isEmpty()) {
             int indiceShortestMenor = 0;
-            for(int i = 0; i < verticesDijkstra.size()-1; i++){
-                if(shortest[i] < shortest[i+1]){
-                    indiceShortestMenor = i+1;
+            for(int i = 1; i < verticesDijkstra.size(); i++){
+                int indiceVertice = posiciones.get(verticesDijkstra.get(i));
+                int indiceVerticeMenor = posiciones.get(verticesDijkstra.get(indiceShortestMenor));
+                if(shortest[indiceVertice] < shortest[indiceVerticeMenor]){
+                    indiceShortestMenor = i;
                 }
             }
 
             T actual = verticesDijkstra.get(indiceShortestMenor);
+            verticesDijkstra.remove(indiceShortestMenor);
             List<T> adyacentes = getAdyacentesDe(actual);
             for (T adyacente : adyacentes){
                Double pesoArista = getPeso(actual, adyacente);
