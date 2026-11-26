@@ -374,6 +374,7 @@ public class Grafo<T> {
 
             T actual = verticesDijkstra.get(indiceShortestMenor);
             verticesDijkstra.remove(indiceShortestMenor);
+
             List<T> adyacentes = getAdyacentesDe(actual);
             for (T adyacente : adyacentes){
                Double pesoArista = getPeso(actual, adyacente);
@@ -451,6 +452,7 @@ public class Grafo<T> {
             int posActual = posiciones.get(actual);
             for(T vecino : vecinos){
                 int posVecino = posiciones.get(vecino);
+                //relax
                 if(shortest[posActual] + getPeso(actual, vecino) < shortest[posVecino]){
                     shortest[posVecino] = shortest[posActual] + getPeso(actual, vecino);
                     predecesores.set(posVecino, actual);

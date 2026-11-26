@@ -139,6 +139,8 @@ Es útil para ordenar tareas que tienen dependencias: si una tarea debe hacerse 
 
 ### Caminos más cortos en un DAG
 
+Solo funciona en grafos dirigidos y aciclicos.
+
 `caminosMasCortosDAG` devuelve un `double[]` con el costo mínimo desde el vértice de inicio hasta cada vértice:
 
 ```java
