@@ -103,28 +103,31 @@ BFS explora primero los vecinos más cercanos al punto de inicio (en este caso "
 Se ejecuta con `BusquedaEnProfundidad`:
 
 ```java
-grafo.BusquedaEnProfundidad("A");
+grafo.BusquedaEnProfundidad();
 ```
 
-DFS sigue un camino todo lo posible antes de volver atrás y probar otro. Es útil para recorrer el grafo, descubrir si hay conexiones entre sus partes y explorar caminos. Esta implementación empieza desde el vértice indicado y después recorre también los vértices que hayan quedado desconectados.
+DFS sigue un camino todo lo posible antes de volver atrás y probar otro. Es útil para recorrer el grafo, descubrir si hay conexiones entre sus partes y explorar caminos. Esta implementación empieza desde el primer vértice insertado y después recorre también los vértices que hayan quedado desconectados.
 
 ### Dijkstra
 
-Se ejecuta con `dijkstra`, que devuelve un `Double[]` con la distancia mínima desde el inicio hasta cada vértice:
+Se ejecuta con `dijkstra`, que devuelve un `ResultadoCaminos<String>` con **dos listas**: las distancias mínimas y los predecesores de cada camino:
 
 ```java
-Double[] distancias = grafo.dijkstra("A");
+ResultadoCaminos<String> resultado = grafo.dijkstra("A");
+List<Double> distancias = resultado.getDistancias();
+List<String> predecesores = resultado.getPredecesores();
 List<String> vertices = grafo.obtenerVertices();
 
-for (int i = 0; i < distancias.length; i++) {
-    String distancia = distancias[i] == Double.MAX_VALUE
+for (int i = 0; i < distancias.size(); i++) {
+    String distancia = distancias.get(i) == Double.MAX_VALUE
             ? "inalcanzable"
-            : distancias[i].toString();
-    System.out.println(vertices.get(i) + ": " + distancia);
+            : distancias.get(i).toString();
+    System.out.println(vertices.get(i) + ": " + distancia
+            + ", predecesor: " + predecesores.get(i));
 }
 ```
 
-Las distancias aparecen en el mismo orden que `obtenerVertices()`. Es útil para encontrar la ruta de menor costo, por ejemplo, la ruta más corta entre lugares o la alternativa más económica entre opciones conectadas. En esta implementación se usa con grafos dirigidos y los pesos de las aristas deben ser cero o positivos. Un vértice al que no se llega conserva el valor `Double.MAX_VALUE`.
+`getDistancias()` y `getPredecesores()` siguen el mismo orden que `obtenerVertices()`, por lo que la posición `i` corresponde al mismo vértice en ambas. Es útil para encontrar la ruta de menor costo, por ejemplo, la ruta más corta entre lugares o la alternativa más económica entre opciones conectadas. En esta implementación se usa con grafos dirigidos y los pesos de las aristas deben ser cero o positivos. Un vértice al que no se llega conserva el valor `Double.MAX_VALUE` y su predecesor es `null`.
 
 ### Ordenamiento topológico
 
@@ -141,21 +144,35 @@ Es útil para ordenar tareas que tienen dependencias: si una tarea debe hacerse 
 
 Solo funciona en grafos dirigidos y aciclicos.
 
-`caminosMasCortosDAG` devuelve un `double[]` con el costo mínimo desde el vértice de inicio hasta cada vértice:
+`caminosMasCortosDAG` devuelve un `ResultadoCaminos<String>` con **dos listas**: las distancias mínimas y los predecesores de cada camino:
 
 ```java
-double[] distanciasDAG = grafo.caminosMasCortosDAG("A");
+ResultadoCaminos<String> resultado = grafo.caminosMasCortosDAG("A");
+List<Double> distanciasDAG = resultado.getDistancias();
+List<String> predecesoresDAG = resultado.getPredecesores();
 List<String> vertices = grafo.obtenerVertices();
 
-for (int i = 0; i < distanciasDAG.length; i++) {
-    String distancia = distanciasDAG[i] == Double.MAX_VALUE
+for (int i = 0; i < distanciasDAG.size(); i++) {
+    String distancia = distanciasDAG.get(i) == Double.MAX_VALUE
             ? "inalcanzable"
-            : Double.toString(distanciasDAG[i]);
-    System.out.println(vertices.get(i) + ": " + distancia);
+            : distanciasDAG.get(i).toString();
+    System.out.println(vertices.get(i) + ": " + distancia
+            + ", predecesor: " + predecesoresDAG.get(i));
 }
 ```
 
-El arreglo también sigue el orden de `obtenerVertices()`. Este método sirve para buscar rutas de menor costo cuando las conexiones forman un DAG; a diferencia de Dijkstra, puede trabajar con pesos negativos, siempre que el grafo no tenga ciclos. Los vértices inalcanzables conservan `Double.MAX_VALUE`.
+Las listas también siguen el orden de `obtenerVertices()` (no el del ordenamiento topológico). Este método sirve para buscar rutas de menor costo cuando las conexiones forman un DAG; a diferencia de Dijkstra, puede trabajar con pesos negativos, siempre que el grafo no tenga ciclos. Los vértices inalcanzables conservan `Double.MAX_VALUE` y su predecesor es `null`.
+
+## Errores y excepciones
+
+Los métodos no declaran `throws Exception`: utilizan excepciones específicas y no verificadas:
+
+- `NullPointerException`: se pasó `null` donde se esperaba un vértice o un tipo de grafo.
+- `IllegalArgumentException`: el vértice no existe, los vértices son iguales al actualizar un peso o el peso no es un número.
+- `UnsupportedOperationException`: la operación no es válida para el tipo de grafo (por ejemplo, pesos en un grafo no ponderado o Dijkstra en uno no dirigido).
+- `IllegalStateException`: se intenta recorrer un grafo sin vértices.
+
+Todos los métodos públicos y privados están documentados con Javadoc.
 
 ## Pendientes
 

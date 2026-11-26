@@ -7,81 +7,119 @@ package com.mycompany.grafo_261147;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.Objects;
 import java.util.Queue;
 
-/*
- * @param <T> tipo de dato almacenado en los vertices
+/**
+ * Grafo genérico implementado con una matriz de adyacencia.
+ *
+ * <p>Puede ser dirigido o no dirigido, y ponderado o no ponderado. Los
+ * vértices se guardan en orden de inserción y ese mismo orden se utiliza en
+ * las listas que devuelven los algoritmos de caminos más cortos.</p>
+ *
+ * @param <T> tipo de dato almacenado en los vértices
  * @author EdgarUrias
  */
 public class Grafo<T> {
 
     private Double[][] matriz;
-    private final List<T> vertices; //vertices del grafo en orden determinarTipo insercion
-    private final Map<T, Integer> posiciones; //guarda cada vertice con su posicion
+    private final List<T> vertices; // vértices del grafo en orden de inserción
+    private final Map<T, Integer> posiciones; // guarda cada vértice con su posición
     private TipoGrafo tipo;
 
-    //grafo por defecto
+    /**
+     * Crea un grafo vacío, no dirigido y no ponderado.
+     */
     public Grafo() {
         this(TipoGrafo.NO_DIRIGIDO_NO_PONDERADO);
     }
 
-    //crear un grafo del tipo solicitado
+    /**
+     * Crea un grafo vacío del tipo indicado.
+     *
+     * @param tipo tipo de grafo que se desea crear
+     * @throws NullPointerException si {@code tipo} es {@code null}
+     */
     public Grafo(TipoGrafo tipo) {
-        this.tipo = tipo;
+        this.tipo = Objects.requireNonNull(tipo, "El tipo de grafo no puede ser null");
         this.vertices = new ArrayList<>();
         this.posiciones = new HashMap<>();
         this.matriz = new Double[0][0];
     }
 
-    //crear un grafo solo indicando si es dirigido y ponderado 
+    /**
+     * Crea un grafo vacío indicando si es dirigido y si es ponderado.
+     *
+     * @param dirigido  {@code true} si las aristas tienen dirección
+     * @param ponderado {@code true} si las aristas tienen peso
+     */
     public Grafo(boolean dirigido, boolean ponderado) {
         this(TipoGrafo.determinarTipo(dirigido, ponderado));
     }
 
+    /**
+     * Devuelve el tipo de este grafo.
+     *
+     * @return el tipo de grafo
+     */
     public TipoGrafo getTipo() {
         return tipo;
     }
 
-    public boolean esDirigido(){
+    /**
+     * Indica si el grafo es dirigido.
+     *
+     * @return {@code true} si el grafo es dirigido
+     */
+    public boolean esDirigido() {
         return tipo.esDirigido();
     }
 
-    public boolean esPonderado(){
+    /**
+     * Indica si el grafo es ponderado.
+     *
+     * @return {@code true} si el grafo es ponderado
+     */
+    public boolean esPonderado() {
         return tipo.esPonderado();
     }
-    
-    public boolean estaVacio(){
+
+    /**
+     * Indica si el grafo no tiene vértices.
+     *
+     * @return {@code true} si el grafo está vacío
+     */
+    public boolean estaVacio() {
         return vertices.isEmpty();
     }
-    
-    //elimina todos los vertices y aristas 
-    public void limpiar(){
+
+    /**
+     * Elimina todos los vértices y todas las aristas del grafo.
+     */
+    public void limpiar() {
         vertices.clear();
         posiciones.clear();
         matriz = new Double[0][0];
     }
 
+    // métodos para los vértices
 
-    //metodos para los vertices
-    
     /**
-     * inserta un vertice en el grafo. Si el vertice ya existe, no se modifica
+     * Inserta un vértice en el grafo. Si el vértice ya existe, no se modifica
      * el grafo.
      *
-     * @param vertice un vertice para insertar
-     * @return true si el vertice se insertó, o false si ya existia.
-     * @throws Exception si vertice es null.
+     * @param vertice vértice que se desea insertar
+     * @return {@code true} si el vértice se insertó, {@code false} si ya existía
+     * @throws NullPointerException si {@code vertice} es {@code null}
      */
-    public boolean insertarVertice(T vertice) throws Exception{
-        if (vertice == null){
-            throw new Exception("El vértice no puede ser null");
-        }
-        if (posiciones.containsKey(vertice)){
+    public boolean insertarVertice(T vertice) {
+        Objects.requireNonNull(vertice, "El vértice no puede ser null");
+        if (posiciones.containsKey(vertice)) {
             return false;
         }
 
@@ -89,9 +127,9 @@ public class Grafo<T> {
         vertices.add(vertice);
         posiciones.put(vertice, n);
 
-        //la matriz aumenta 1 fila y 1 columna
+        // la matriz aumenta 1 fila y 1 columna
         Double[][] nueva = new Double[n + 1][n + 1];
-        for (int i = 0; i < n; i++){
+        for (int i = 0; i < n; i++) {
             System.arraycopy(matriz[i], 0, nueva[i], 0, n);
         }
         matriz = nueva;
@@ -99,35 +137,35 @@ public class Grafo<T> {
     }
 
     /**
-     * elimina un vertice y todas las aristas relacionadas a ese vertice
+     * Elimina un vértice y todas las aristas relacionadas con él.
      *
-     * @param vertice vertice que se desea eliminar
-     * @return true si el vértice existía y fue eliminado, false en caso contrario
+     * @param vertice vértice que se desea eliminar
+     * @return {@code true} si el vértice existía y fue eliminado,
+     *         {@code false} si es {@code null} o no pertenece al grafo
      */
-    public boolean eliminarVertice(T vertice){
+    public boolean eliminarVertice(T vertice) {
         if (vertice == null) {
             return false;
         }
-        int indice = posiciones.get(vertice);
+        Integer indiceEncontrado = posiciones.get(vertice);
+        if (indiceEncontrado == null) {
+            return false;
+        }
+        int indice = indiceEncontrado;
 
-        //reducir la matriz de adyacencia -1
+        // reducir la matriz de adyacencia en 1 fila y 1 columna
         int n = vertices.size();
         Double[][] nueva = new Double[n - 1][n - 1];
         int filaNueva = 0;
-        for (int i = 0; i < n; i++){
-            if (i != indice){ 
-                /*con el indice donde estaba el vertice a eliminar, se elimina la fila y columna
-                que le corresponde*/
-                
+        for (int i = 0; i < n; i++) {
+            if (i != indice) {
                 int columnaNueva = 0;
-                
-                for (int j = 0; j < n; j++){
-                    if (j != indice){
+                for (int j = 0; j < n; j++) {
+                    if (j != indice) {
                         nueva[filaNueva][columnaNueva] = matriz[i][j];
                         columnaNueva++;
                     }
                 }
-                
                 filaNueva++;
             }
         }
@@ -135,7 +173,7 @@ public class Grafo<T> {
         vertices.remove(indice);
         posiciones.remove(vertice);
 
-        //se actualizan los indices de los vertices que quedaron despues
+        // se actualizan los índices de los vértices que quedaron después
         for (int k = indice; k < vertices.size(); k++) {
             posiciones.put(vertices.get(k), k);
         }
@@ -145,285 +183,361 @@ public class Grafo<T> {
     }
 
     /**
-     * indica si un vertice pertenece al grafo
+     * Indica si un vértice pertenece al grafo.
      *
-     * @param vertice vertice a comprobar
-     * @return true si el vertice existe, false si no pertenece
+     * @param vertice vértice que se desea comprobar
+     * @return {@code true} si el vértice existe, {@code false} en caso contrario
      */
-    public boolean existeVertice(T vertice){
-        if(vertice != null){
-            return posiciones.containsKey(vertice);
-        }
-        else return false;
+    public boolean existeVertice(T vertice) {
+        return vertice != null && posiciones.containsKey(vertice);
     }
 
     /**
-     * devuelve una lista de los vertices del grafo en orden de inserción
-     * @return lista con los vertices
+     * Devuelve los vértices del grafo en orden de inserción.
+     *
+     * @return lista con los vértices
      */
-    public List<T> obtenerVertices(){
+    public List<T> obtenerVertices() {
         return vertices;
     }
 
     /**
-     * devuelve el numero de vertices del grafo
+     * Devuelve el número de vértices del grafo.
      *
-     * @return cantidad de vertices
+     * @return cantidad de vértices
      */
-    public int getNumeroVertices(){
+    public int getNumeroVertices() {
         return vertices.size();
     }
-    
+
+    // métodos para las aristas
+
     /**
-     * inserta una arista sin especificar peso, por defecto 1
+     * Inserta una arista sin especificar peso; por defecto el peso es 1.
      *
-     * @param origen  vertice de origen
-     * @param destino vertice de destino
-     * @return true si la arista no existia, false si ya existia y solo se actualizó,
-     * si origen y destino son el mismo vértice.
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @return {@code true} si la arista no existía, {@code false} si ya existía
+     *         y solo se actualizó su peso
+     * @throws NullPointerException  si alguno de los vértices es {@code null}
+     * @throws IllegalArgumentException si alguno de los vértices no existe en el grafo
      */
-    public boolean insertarArista(T origen, T destino) throws Exception{
+    public boolean insertarArista(T origen, T destino) {
         return insertarAristaInterna(origen, destino, 1.0);
     }
 
     /**
-     * inserta una arista en un grafo ponderado
-     * @param origen  vertice de origen
-     * @param destino vertice de destino
+     * Inserta una arista con peso en un grafo ponderado.
+     *
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
      * @param peso    peso de la arista
-     * @return true si la arista se agregó, false si ya existia
-     * @throws Exception si el grafo no es ponderado, si algun vertice no existe, si
-     * los vertices son iguales o si el peso no es un numero
+     * @return {@code true} si la arista no existía, {@code false} si ya existía
+     *         y solo se actualizó su peso
+     * @throws UnsupportedOperationException si el grafo no es ponderado
+     * @throws NullPointerException  si alguno de los vértices es {@code null}
+     * @throws IllegalArgumentException si alguno de los vértices no existe o
+     *         si {@code peso} no es un número
      */
-    public boolean insertarArista(T origen, T destino, double peso) throws Exception{
-        if (!tipo.esPonderado()){
-            System.out.println("No se puede insertar la arista con peso en un grafo no ponderado");
+    public boolean insertarArista(T origen, T destino, double peso) {
+        if (!tipo.esPonderado()) {
+            throw new UnsupportedOperationException(
+                    "No se puede insertar una arista con peso en un grafo no ponderado");
         }
         return insertarAristaInterna(origen, destino, peso);
     }
-    
-    
-    private boolean insertarAristaInterna(T origen, T destino, double peso) throws Exception{
-        //verificar que el peso sea un numero
-        if(Double.isNaN(peso)){
-            throw new Exception("El peso tiene que ser un numero");
+
+    /**
+     * Inserta una arista en la matriz de adyacencia.
+     *
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @param peso    peso de la arista
+     * @return {@code true} si la arista es nueva, {@code false} si ya existía
+     * @throws NullPointerException  si alguno de los vértices es {@code null}
+     * @throws IllegalArgumentException si alguno de los vértices no existe o
+     *         si {@code peso} no es un número
+     */
+    private boolean insertarAristaInterna(T origen, T destino, double peso) {
+        if (Double.isNaN(peso)) {
+            throw new IllegalArgumentException("El peso tiene que ser un número");
         }
-        
-        //verificar que los vertices sean diferentes
+
         int i = obtenerIndice(origen);
         int j = obtenerIndice(destino);
-        if (i == j){
+        if (i == j) {
             matriz[i][j] = peso;
             return true;
         }
-        
-        //mejor explicación de este metodo en el documento
-        boolean nueva = matriz[i][j] == null 
+
+        boolean nueva = matriz[i][j] == null
                 && (tipo.esDirigido() || matriz[j][i] == null);
 
-        //poner en la matriz de adyacencia los valores del peso de la arista nueva
         matriz[i][j] = peso;
-        if (!tipo.esDirigido()){
+        if (!tipo.esDirigido()) {
             matriz[j][i] = peso;
         }
         return nueva;
     }
 
     /**
-     * elimina la arista indicada
+     * Elimina la arista indicada.
      *
-     * en un grafo dirigido se elimina unicamente la arista
-     * origen a destino y en un grafo no dirigido se eliminan ambos
-     * sentidos
+     * <p>En un grafo dirigido se elimina únicamente la arista de origen a
+     * destino; en uno no dirigido se eliminan ambos sentidos.</p>
      *
-     * @param origen  vertice de origen
-     * @param destino vertice de destino
-     * @return true si la arista existia y fue eliminada, false en caso contrario
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @return {@code true} si la arista existía y fue eliminada,
+     *         {@code false} en caso contrario
      */
-    public boolean eliminarArista(T origen, T destino){
+    public boolean eliminarArista(T origen, T destino) {
         Integer i = posiciones.get(origen);
         Integer j = posiciones.get(destino);
-        if (i == null || j == null){
+        if (i == null || j == null) {
             return false;
         }
 
         boolean existia = matriz[i][j] != null;
         matriz[i][j] = null;
-        if (!tipo.esDirigido()){
+        if (!tipo.esDirigido()) {
             matriz[j][i] = null;
         }
         return existia;
     }
 
     /**
-     * indica si existe una arista entre dos vertices.
-     * @param origen vertice de origen
-     * @param destino vertice de destino
-     * @return true si la arista existe
+     * Indica si existe una arista entre dos vértices.
+     *
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @return {@code true} si la arista existe
      */
-    public boolean existeArista(T origen, T destino){
+    public boolean existeArista(T origen, T destino) {
         Integer i = posiciones.get(origen);
         Integer j = posiciones.get(destino);
         return i != null && j != null && matriz[i][j] != null;
     }
 
     /**
-     * actualiza el peso de una arista que ya existe,
-     * solo esta disponible para grafos ponderados
+     * Actualiza el peso de una arista que ya existe. Solo está disponible en
+     * grafos ponderados; en un grafo no dirigido se actualizan ambos sentidos.
      *
-     * @param origen vertice de origen
-     * @param destino vertice de destino
-     * @param peso nuevo peso
-     * @return true si la arista existia y se actualizó, false si la arista no existe
-     * @throws Exception si el grafo no es ponderado, si alguno de los vertices no existe,
-     * si los vertices son iguales o si el peso no es numero
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @param peso    nuevo peso de la arista
+     * @return {@code true} si la arista existía y se actualizó,
+     *         {@code false} si la arista no existe
+     * @throws UnsupportedOperationException si el grafo no es ponderado
+     * @throws NullPointerException  si alguno de los vértices es {@code null}
+     * @throws IllegalArgumentException si alguno de los vértices no existe,
+     *         si son iguales o si {@code peso} no es un número
      */
-    public boolean actualizarPeso(T origen, T destino, double peso) throws Exception {
-        if (!tipo.esPonderado()){
-            throw new Exception("No se puede actualizar un peso: el grafo no es ponderado");
+    public boolean actualizarPeso(T origen, T destino, double peso) {
+        if (!tipo.esPonderado()) {
+            throw new UnsupportedOperationException(
+                    "No se puede actualizar un peso: el grafo no es ponderado");
         }
-        if(Double.isNaN(peso));
+        if (Double.isNaN(peso)) {
+            throw new IllegalArgumentException("El peso tiene que ser un número");
+        }
+
         int i = obtenerIndice(origen);
         int j = obtenerIndice(destino);
-        if (i == j){
-            throw new Exception("Los vertices deben ser diferentes");
+        if (i == j) {
+            throw new IllegalArgumentException("Los vértices deben ser diferentes");
         }
-        if (matriz[i][j] == null){
+        if (matriz[i][j] == null) {
             return false;
         }
 
         matriz[i][j] = peso;
-        if (!tipo.esDirigido()){ //si no es dirigido, el peso es igual de v1 a v2 que de v2 a v1
+        if (!tipo.esDirigido()) {
             matriz[j][i] = peso;
         }
         return true;
     }
-    
+
     // recorridos BFS y DFS
-    
-    public void BusquedaEnAnchura(T verticeInicio) throws Exception{
-        boolean visitado[] = new boolean[vertices.size()];
+
+    /**
+     * Realiza una búsqueda en anchura (BFS) desde el vértice indicado e
+     * imprime el orden de visita en la consola.
+     *
+     * @param verticeInicio vértice desde el que comienza la búsqueda
+     * @throws NullPointerException  si {@code verticeInicio} es {@code null}
+     * @throws IllegalArgumentException si el vértice no pertenece al grafo
+     */
+    public void BusquedaEnAnchura(T verticeInicio) {
+        boolean[] visitado = new boolean[vertices.size()];
         Queue<T> cola = new LinkedList<>();
-        
-        int indiceInicio = posiciones.get(verticeInicio);
+
+        int indiceInicio = obtenerIndice(verticeInicio);
         visitado[indiceInicio] = true;
-        
+
         cola.add(verticeInicio);
-        System.out.println("Busqueda en anchura empezando desde: " + verticeInicio.toString());
-        
-        while(!cola.isEmpty()){
+        System.out.println("Busqueda en anchura empezando desde: " + verticeInicio);
+
+        while (!cola.isEmpty()) {
             T actual = cola.poll();
             System.out.println(String.valueOf(actual));
-            
-            for(T vecino : getAdyacentesDe(actual)){
-                if(!visitado[posiciones.get(vecino)]){
+
+            for (T vecino : getAdyacentesDe(actual)) {
+                if (!visitado[posiciones.get(vecino)]) {
                     visitado[posiciones.get(vecino)] = true;
                     cola.add(vecino);
                 }
             }
-        }      
+        }
     }
-    
-    public void BusquedaEnProfundidad(T verticeInicio) throws Exception{
+
+    /**
+     * Realiza una búsqueda en profundidad (DFS) e imprime el orden de visita.
+     *
+     * <p>Comienza en el primer vértice insertado y, si quedan vértices sin
+     * visitar (por ejemplo, componentes desconectadas), continúa desde ellos.</p>
+     *
+     * @throws IllegalStateException si el grafo no tiene vértices
+     */
+    public void BusquedaEnProfundidad() {
+        if (vertices.isEmpty()) {
+            throw new IllegalStateException("No se puede recorrer un grafo sin vértices");
+        }
+
         boolean[] visitado = new boolean[vertices.size()];
-        System.out.println("Busqueda en profundidad empezando desde " +String.valueOf(verticeInicio));
-        BusquedaEnProfundidadRec(verticeInicio, visitado);
+        System.out.println("Busqueda en profundidad iniciando desde " + verticeString(vertices.getFirst()));
+        BusquedaEnProfundidadRec(vertices.getFirst(), visitado);
+
         for (int i = 0; i < vertices.size(); i++) {
-            if(visitado[i] == false){
+            if (!visitado[i]) {
                 BusquedaEnProfundidadRec(vertices.get(i), visitado);
             }
         }
     }
-    
-    private void BusquedaEnProfundidadRec(T actual, boolean[] visitado) throws Exception{
+
+    /**
+     * Visita recursivamente un vértice y sus adyacentes no visitados.
+     *
+     * @param actual   vértice que se está visitando
+     * @param visitado arreglo que marca los vértices ya visitados
+     */
+    private void BusquedaEnProfundidadRec(T actual, boolean[] visitado) {
         visitado[posiciones.get(actual)] = true;
         System.out.println(String.valueOf(actual));
-        
-        for(T vecino : getAdyacentesDe(actual)){
-            if(!visitado[posiciones.get(vecino)]){
+
+        for (T vecino : getAdyacentesDe(actual)) {
+            if (!visitado[posiciones.get(vecino)]) {
                 BusquedaEnProfundidadRec(vecino, visitado);
             }
         }
     }
 
-    public Double[] dijkstra(T vOrigen) throws Exception{
-        if(!tipo.esDirigido()){
-            throw new Exception("Dijsktra solo esta disponible para grafos dirigidos");
+    /**
+     * Calcula los caminos más cortos desde un vértice origen mediante el
+     * algoritmo de Dijkstra. Solo se aplica a grafos dirigidos con pesos no
+     * negativos.
+     *
+     * @param vOrigen vértice desde el que se calculan las distancias
+     * @return resultado con dos listas en orden de inserción de los vértices:
+     *         las distancias mínimas y los predecesores de cada camino
+     * @throws UnsupportedOperationException si el grafo no es dirigido
+     * @throws NullPointerException  si {@code vOrigen} es {@code null}
+     * @throws IllegalArgumentException si el vértice origen no existe en el grafo
+     */
+    public ResultadoCaminos<T> dijkstra(T vOrigen) {
+        if (!tipo.esDirigido()) {
+            throw new UnsupportedOperationException(
+                    "Dijkstra solo está disponible para grafos dirigidos");
         }
-        Double[] shortest = new Double[vertices.size()];
-        ArrayList<T> predecesor = new ArrayList<>();
-        
-        Arrays.fill(shortest, Double.MAX_VALUE);
-        for (T vertice : vertices) {
-            predecesor.add(null);
-        }
-        shortest[posiciones.get(vOrigen)] = 0.0;
+        int indiceOrigen = obtenerIndice(vOrigen);
 
-        List<T> verticesDijkstra = new ArrayList<>();
-        verticesDijkstra.addAll(vertices);
+        List<Double> shortest = new ArrayList<>(
+                Collections.nCopies(vertices.size(), Double.MAX_VALUE));
+        List<T> predecesor = new ArrayList<>(
+                Collections.nCopies(vertices.size(), null));
+        shortest.set(indiceOrigen, 0.0);
 
-        while(!verticesDijkstra.isEmpty()) {
+        // se va tomando el vértice no visitado con la distancia menor
+        List<T> verticesDijkstra = new ArrayList<>(vertices);
+
+        while (!verticesDijkstra.isEmpty()) {
             int indiceShortestMenor = 0;
-            for(int i = 1; i < verticesDijkstra.size(); i++){
+            for (int i = 1; i < verticesDijkstra.size(); i++) {
                 int indiceVertice = posiciones.get(verticesDijkstra.get(i));
                 int indiceVerticeMenor = posiciones.get(verticesDijkstra.get(indiceShortestMenor));
-                if(shortest[indiceVertice] < shortest[indiceVerticeMenor]){
+                if (shortest.get(indiceVertice) < shortest.get(indiceVerticeMenor)) {
                     indiceShortestMenor = i;
                 }
             }
 
-            T actual = verticesDijkstra.get(indiceShortestMenor);
-            verticesDijkstra.remove(indiceShortestMenor);
+            T actual = verticesDijkstra.remove(indiceShortestMenor);
+            int x = posiciones.get(actual);
 
-            List<T> adyacentes = getAdyacentesDe(actual);
-            for (T adyacente : adyacentes){
-               Double pesoArista = getPeso(actual, adyacente);
-                int x = posiciones.get(actual);
+            // si el menor es inalcanzable, los que quedan también lo son
+            if (shortest.get(x) == Double.MAX_VALUE) {
+                break;
+            }
+
+            // relajar las aristas de todos los adyacentes del actual
+            for (T adyacente : getAdyacentesDe(actual)) {
+                double pesoArista = getPeso(actual, adyacente);
                 int y = posiciones.get(adyacente);
-                if(shortest[x] + pesoArista < shortest[y]){
-                    shortest[y] = shortest[x] + pesoArista;
+                if (shortest.get(x) + pesoArista < shortest.get(y)) {
+                    shortest.set(y, shortest.get(x) + pesoArista);
                     predecesor.set(y, actual);
                 }
             }
-            
         }
-        return shortest;
+
+        return new ResultadoCaminos<>(shortest, predecesor);
     }
 
-    //ordenamiento topologico
-    public List<T> ordenamientoTopologico() throws Exception{
-        if(!tipo.esDirigido()){
-            throw new Exception("El ordenamiento topologico solo esta disponible para grafos dirigidos");
+    // ordenamiento topológico
+
+    /**
+     * Devuelve los vértices en orden topológico: si existe una arista de u a v,
+     * u aparece antes que v. Solo se aplica a grafos dirigidos.
+     *
+     * <p>Si el grafo tiene ciclos no existe un orden válido; en ese caso la
+     * lista devuelta puede estar incompleta.</p>
+     *
+     * @return lista de vértices en orden topológico
+     * @throws UnsupportedOperationException si el grafo no es dirigido
+     */
+    public List<T> ordenamientoTopologico() {
+        if (!tipo.esDirigido()) {
+            throw new UnsupportedOperationException(
+                    "El ordenamiento topológico solo está disponible para grafos dirigidos");
         }
 
         int[] gradoEntrada = new int[vertices.size()];
         Arrays.fill(gradoEntrada, 0);
 
-        for(int i = 0; i < vertices.size(); i++){
+        for (int i = 0; i < vertices.size(); i++) {
             gradoEntrada[i] = getGradoEntrada(vertices.get(i));
         }
 
         List<T> siguiente = new ArrayList<>();
         List<T> ordenLineal = new ArrayList<>();
 
-        for(int i = 0; i < gradoEntrada.length; i++){
-            if(gradoEntrada[i] == 0){
+        for (int i = 0; i < gradoEntrada.length; i++) {
+            if (gradoEntrada[i] == 0) {
                 siguiente.add(vertices.get(i));
             }
         }
 
-        while(!siguiente.isEmpty()){
+        while (!siguiente.isEmpty()) {
             T actual = siguiente.getFirst();
             siguiente.removeFirst();
 
             ordenLineal.addLast(actual);
 
             List<T> vecinos = getAdyacentesDe(actual);
-            for(T vecino : vecinos){
+            for (T vecino : vecinos) {
                 int posVecino = posiciones.get(vecino);
                 gradoEntrada[posVecino] -= 1;
 
-                if(gradoEntrada[posVecino] == 0) {
+                if (gradoEntrada[posVecino] == 0) {
                     siguiente.add(vecino);
                 }
             }
@@ -431,38 +545,57 @@ public class Grafo<T> {
         return ordenLineal;
     }
 
-    public double[] caminosMasCortosDAG(T vInicio) throws Exception{
-        if(!tipo.esDirigido()){
-            throw new Exception("Este metodo solo es para grafos dirigidos");
+    /**
+     * Calcula los caminos más cortos en un grafo acíclico dirigido (DAG)
+     * usando su ordenamiento topológico. A diferencia de Dijkstra, admite
+     * pesos negativos siempre que el grafo no tenga ciclos.
+     *
+     * @param vInicio vértice desde el que se calculan las distancias
+     * @return resultado con dos listas en orden de inserción de los vértices:
+     *         las distancias mínimas y los predecesores de cada camino
+     * @throws UnsupportedOperationException si el grafo no es dirigido
+     * @throws NullPointerException  si {@code vInicio} es {@code null}
+     * @throws IllegalArgumentException si el vértice inicial no existe en el grafo
+     */
+    public ResultadoCaminos<T> caminosMasCortosDAG(T vInicio) {
+        if (!tipo.esDirigido()) {
+            throw new UnsupportedOperationException(
+                    "Los caminos más cortos en un DAG solo están disponibles para grafos dirigidos");
         }
+        int indiceInicio = obtenerIndice(vInicio);
 
         List<T> ordenLineal = ordenamientoTopologico();
-        double shortest[] = new double[ordenLineal.size()];
+        List<Double> shortest = new ArrayList<>(Collections.nCopies(vertices.size(), Double.MAX_VALUE));
+        List<T> predecesores = new ArrayList<>(Collections.nCopies(vertices.size(), null));
 
-        List<T> predecesores = new ArrayList<>();
-        Arrays.fill(shortest, Double.MAX_VALUE);
-        shortest[posiciones.get(vInicio)] = 0;
+        shortest.set(indiceInicio, 0.0);
 
-        for(int i = 0; i < shortest.length; i++){
-            predecesores.add(null);
-        }
-
-        for(T actual : ordenLineal){
-            List<T> vecinos = getAdyacentesDe(actual);
+        for (T actual : ordenLineal) {
             int posActual = posiciones.get(actual);
-            for(T vecino : vecinos){
+            if (shortest.get(posActual) == Double.MAX_VALUE) {
+                continue;
+            }
+            for (T vecino : getAdyacentesDe(actual)) {
                 int posVecino = posiciones.get(vecino);
-                //relax
-                if(shortest[posActual] + getPeso(actual, vecino) < shortest[posVecino]){
-                    shortest[posVecino] = shortest[posActual] + getPeso(actual, vecino);
+                double peso = getPeso(actual, vecino);
+                if (shortest.get(posActual) + peso < shortest.get(posVecino)) {
+                    shortest.set(posVecino, shortest.get(posActual) + peso);
                     predecesores.set(posVecino, actual);
                 }
             }
         }
-        return shortest;
+
+        return new ResultadoCaminos<>(shortest, predecesores);
     }
-    
-    
+
+    /**
+     * Devuelve el peso de la arista que va de origen a destino.
+     *
+     * @param origen  vértice de origen
+     * @param destino vértice de destino
+     * @return el peso de la arista, o {@code Double.NaN} si algún vértice no
+     *         existe o si la arista no está presente
+     */
     public double getPeso(T origen, T destino) {
         Integer i = posiciones.get(origen);
         Integer j = posiciones.get(destino);
@@ -473,26 +606,25 @@ public class Grafo<T> {
     }
 
     /**
-     * devuelve el numero de aristas del grafo, en un grafo no dirigido cada
-     * arista se cuenta una sola vez
+     * Devuelve el número de aristas del grafo. En un grafo no dirigido cada
+     * arista se cuenta una sola vez.
      *
      * @return cantidad de aristas
      */
-    public int getNumeroAristas(){
+    public int getNumeroAristas() {
         int aristas = 0;
-        if(tipo.esDirigido()){
-            for (Double[] fila : matriz){
-                for (Double arista : fila){
-                    if(arista != null){
+        if (tipo.esDirigido()) {
+            for (Double[] fila : matriz) {
+                for (Double arista : fila) {
+                    if (arista != null) {
                         aristas++;
                     }
                 }
             }
-        }
-        else{
-            for (int i = 0; i < matriz.length; i++){
-                for (int j = i; j < matriz.length; j++){
-                    if(matriz[i][j] != null){
+        } else {
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = i; j < matriz.length; j++) {
+                    if (matriz[i][j] != null) {
                         aristas++;
                     }
                 }
@@ -502,20 +634,22 @@ public class Grafo<T> {
     }
 
     /**
-     * devuelve los vertices adyacentes a un vertice.
+     * Devuelve los vértices adyacentes a uno dado.
      *
-     * en un grafo dirigido se consideran unicamente los sucesores (aristas
-     * que salen del vertice) y en un grafo no dirigido se consideran todos los
-     * vecinos
+     * <p>En un grafo dirigido se consideran únicamente los sucesores (aristas
+     * que salen del vértice); en uno no dirigido se consideran todos los
+     * vecinos.</p>
      *
-     * @param vertice vertice a revisar
-     * @return lista de vertices en orden de inserción.
+     * @param vertice vértice que se desea revisar
+     * @return lista de vértices adyacentes en orden de inserción
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
      */
-    public List<T> getAdyacentesDe(T vertice) throws Exception{
+    public List<T> getAdyacentesDe(T vertice) {
         int i = obtenerIndice(vertice);
         List<T> resultado = new ArrayList<>();
-        for(int j = 0; j < matriz.length; j++){
-            if(matriz[i][j] != null) {
+        for (int j = 0; j < matriz.length; j++) {
+            if (matriz[i][j] != null) {
                 resultado.add(vertices.get(j));
             }
         }
@@ -523,178 +657,204 @@ public class Grafo<T> {
     }
 
     /**
-     * calcula el grado de salida del vertice, el numero de aristas
-     * que salen de ese vertice
+     * Calcula el grado de salida de un vértice: el número de aristas que salen
+     * de él. Solo tiene sentido en grafos dirigidos.
      *
-     * @param vertice vertice a revisar
-     * @return grado de salida
+     * @param vertice vértice que se desea revisar
+     * @return grado de salida, o {@code -1} si el grafo no es dirigido
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
      */
-    public int getGradoSalida(T vertice) throws Exception{
-        if(tipo.esDirigido()){
+    public int getGradoSalida(T vertice) {
+        if (tipo.esDirigido()) {
             int i = obtenerIndice(vertice);
             int grado = 0;
-            for(int j = 0; j < matriz.length; j++){
-                if (matriz[i][j] != null){
+            for (int j = 0; j < matriz.length; j++) {
+                if (matriz[i][j] != null) {
                     grado++;
                 }
             }
             return grado;
         }
-        else{
-            return -1;
+        return -1;
+    }
+
+    /**
+     * Calcula el grado de entrada de un vértice: el número de aristas que
+     * llegan a él. Solo tiene sentido en grafos dirigidos.
+     *
+     * @param vertice vértice que se desea consultar
+     * @return grado de entrada, o {@code -1} si el grafo no es dirigido
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
+     */
+    public int getGradoEntrada(T vertice) {
+        if (tipo.esDirigido()) {
+            int j = obtenerIndice(vertice);
+            int grado = 0;
+            for (int i = 0; i < matriz.length; i++) {
+                if (matriz[i][j] != null) {
+                    grado++;
+                }
+            }
+            return grado;
+        }
+        return -1;
+    }
+
+    /**
+     * Imprime en la consola el grado de entrada de un vértice.
+     *
+     * @param vertice vértice que se desea evaluar
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
+     */
+    public void imprimirGradoEntrada(T vertice) {
+        int gradEntrada = getGradoEntrada(vertice);
+        if (gradEntrada == -1) {
+            System.out.println("Este método es exclusivo de los grafos dirigidos");
+        } else {
+            System.out.println("Grado de entrada del vértice " + verticeString(vertice)
+                    + ": " + gradEntrada);
         }
     }
 
     /**
-     * calcula el grado de entrada de un vertice es decir
-     * el numero de aristas que entran en ese vertice
+     * Imprime en la consola el grado de salida de un vértice.
      *
-     * @param vertice vertice de consulta.
-     * @return grado de entrada
+     * @param vertice vértice que se desea evaluar
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
      */
-    public int getGradoEntrada(T vertice) throws Exception{
-        if(tipo.esDirigido()){
-            int j = obtenerIndice(vertice);
-            int grado = 0;
-            for(int i = 0; i < matriz.length; i++){
-                if (matriz[i][j] != null){
-                    grado++;
-                }
-            }
-            return grado;
-        }
-        else{
-            return -1;
-        }
-    }
-    
-    /***
-     * 
-     * permite imprimir el grado de entrada de un vertice especificado
-     * 
-     * @param vertice el vertice para evaluar
-     */
-    public void imprimirGradoEntrada(T vertice) throws Exception{
-        int gradEntrada = getGradoEntrada(vertice);
-        if(gradEntrada == -1){
-            System.out.println("Este metodo es exclusivo de los grafos dirigidos");
-        }
-        else{
-            System.out.println("Grado de entrada del vertice " + verticeString(vertice) + ": " + String.valueOf(gradEntrada));
-        }
-    }
-    
-    /***
-     * 
-     * permite imprimir el grado de salida de un vertice especificado
-     * 
-     * @param vertice el vertice para evaluar
-     */
-    public void imprimirGradoSalida(T vertice) throws Exception{
+    public void imprimirGradoSalida(T vertice) {
         int gradSalida = getGradoSalida(vertice);
-        if(gradSalida == -1){
-            System.out.println("Este metodo es exclusivo de los grafos dirigidos");
-        }
-        else{
-            System.out.println("Grado de salida del vertice " + verticeString(vertice) + ": " + String.valueOf(gradSalida));
+        if (gradSalida == -1) {
+            System.out.println("Este método es exclusivo de los grafos dirigidos");
+        } else {
+            System.out.println("Grado de salida del vértice " + verticeString(vertice)
+                    + ": " + gradSalida);
         }
     }
-    
+
     /**
-     * imprime el conjunto de vertices adyacentes a un vertice
+     * Imprime en la consola el conjunto de vértices adyacentes a un vértice.
      *
-     * @param vertice es el vertice para calcular los adyacentes e imprimirlos
+     * @param vertice vértice del que se calculan e imprimen los adyacentes
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
      */
-    public void imprimirAdyacentes(T vertice) throws Exception{
+    public void imprimirAdyacentes(T vertice) {
         List<T> adyacentes = getAdyacentesDe(vertice);
         StringBuilder ady = new StringBuilder();
-        for(T vecino : adyacentes){
+        for (T vecino : adyacentes) {
             ady.append(verticeString(vecino));
         }
-        System.out.println("Vertices adyacentes a " + verticeString(vertice)
+        System.out.println("Vértices adyacentes a " + verticeString(vertice)
                 + ": " + ady);
     }
 
     /**
-     * imprime la matriz de adyacencia del grafo con los vertices como
-     * encabezados de fila y columna
+     * Imprime la matriz de adyacencia con los vértices como encabezados de
+     * fila y columna.
      *
-     * en un grafo no ponderado, 0 indica que no hay arista y
-     * 1 que si hay arista, en un grafo ponderado 0 indicq que no hay arista
-     * y el resto de celdas muestran el peso
+     * <p>En un grafo no ponderado, 0 indica que no hay arista y 1 que sí la
+     * hay; en uno ponderado, 0 indica ausencia de arista y el resto de celdas
+     * muestran el peso.</p>
      */
-    public void imprimirMatrizAdyacencia(){
+    public void imprimirMatrizAdyacencia() {
         int n = vertices.size();
         System.out.println("Matriz de adyacencia (" + tipo.descripcion() + "):");
         if (n == 0) {
-            System.out.println("grafo sin vertices");
+            System.out.println("grafo sin vértices");
             return;
         }
-        
-        //encabezado
+
         System.out.print("+   ");
-        for (int i = 0; i < matriz.length; i++){
+        for (int i = 0; i < matriz.length; i++) {
             System.out.print(verticeString(vertices.get(i)) + "   ");
         }
         System.out.print("\n");
-        
-        //filas
-        for (int i = 0; i < matriz.length; i++){
+
+        for (int i = 0; i < matriz.length; i++) {
             System.out.print(verticeString(vertices.get(i)) + "   ");
-            for (int j = 0; j < vertices.size(); j++){
-                System.out.print(formatearCelda(matriz[i][j])+ "   ");
+            for (int j = 0; j < vertices.size(); j++) {
+                System.out.print(formatearCelda(matriz[i][j]) + "   ");
             }
             System.out.print("\n");
         }
     }
 
-    
-    //imprime el numero de vertices y de aristas del grafo. 
-    public void imprimirNumeroVerticesAristas(){
-        System.out.println("Numero de vertices: "+getNumeroVertices());
-        System.out.println("Numero de aristas: "+getNumeroAristas());
+    /**
+     * Imprime el número de vértices y de aristas del grafo.
+     */
+    public void imprimirNumeroVerticesAristas() {
+        System.out.println("Número de vértices: " + getNumeroVertices());
+        System.out.println("Número de aristas: " + getNumeroAristas());
     }
 
-    //imprime todos los vertices del grafo en orden de inserción.
-    public void imprimirVertices(){
+    /**
+     * Imprime todos los vértices del grafo en orden de inserción.
+     */
+    public void imprimirVertices() {
         StringBuilder lista = new StringBuilder();
-        for (T vertice : vertices){
+        for (T vertice : vertices) {
             lista.append(verticeString(vertice));
         }
-        System.out.println("Vertices: " + lista);
+        System.out.println("Vértices: " + lista);
     }
 
-    private int obtenerIndice(T vertice) throws Exception {
-        if (vertice == null){
-            throw new Exception("El vertice no puede ser nulo");
-        }
+    /**
+     * Devuelve la posición que ocupa un vértice en la matriz de adyacencia.
+     *
+     * @param vertice vértice que se desea localizar
+     * @return índice del vértice en la lista de inserción
+     * @throws NullPointerException  si {@code vertice} es {@code null}
+     * @throws IllegalArgumentException si el vértice no existe en el grafo
+     */
+    private int obtenerIndice(T vertice) {
+        Objects.requireNonNull(vertice, "El vértice no puede ser nulo");
         Integer indice = posiciones.get(vertice);
-        if (indice == null){
-            throw new Exception("El vertice " + vertice + " no existe en el grafo");
+        if (indice == null) {
+            throw new IllegalArgumentException("El vértice " + vertice + " no existe en el grafo");
         }
         return indice;
     }
 
-    private String formatearCelda(Double valor){
-        if(valor == null){
+    /**
+     * Da formato al valor de una celda de la matriz para imprimirla.
+     *
+     * @param valor peso guardado en la celda, o {@code null} si no hay arista
+     * @return "0" si no hay arista, "1" en grafos no ponderados o el peso
+     */
+    private String formatearCelda(Double valor) {
+        if (valor == null) {
             return "0";
         }
-        if(!tipo.esPonderado()){
+        if (!tipo.esPonderado()) {
             return "1";
         }
         return String.valueOf(valor);
     }
 
-    
-    private String verticeString(T vertice){
+    /**
+     * Convierte un vértice a cadena de texto para los mensajes.
+     *
+     * @param vertice vértice que se desea representar
+     * @return representación textual del vértice
+     */
+    private String verticeString(T vertice) {
         return String.valueOf(vertice);
     }
-    
+
+    /**
+     * Representación textual del grafo.
+     *
+     * @return cadena con el tipo, los vértices y el número de aristas
+     */
     @Override
-    public String toString(){
+    public String toString() {
         return "Grafo{" + tipo.descripcion()
                 + ", vertices=" + vertices
                 + ", aristas=" + getNumeroAristas() + "}";
     }
-
 }

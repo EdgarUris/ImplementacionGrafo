@@ -9,30 +9,41 @@ package com.mycompany.grafo_261147;
 import java.util.List;
 
 /**
+ * Clase principal con ejemplos de uso de la implementación de grafos.
+ *
  * @author EdgarUrias
  */
 public class Grafo_261147 {
 
-    public static void main(String[] args) throws Exception {
-        
+    /**
+     * Punto de entrada de la aplicación; ejecuta la prueba de Dijkstra.
+     *
+     * @param args argumentos de la línea de comandos (no se utilizan)
+     */
+    public static void main(String[] args) {
+
         probarGrafoDirigidoPonderado();
     }
-    
-    private static void probarGrafoDirigidoNoPonderado() throws Exception{
-        Nodo n1 = new Nodo(1);
-        Nodo n2 = new Nodo(2);
-        Nodo n3 = new Nodo(3);
-        Nodo n4 = new Nodo(4);
-        Nodo n5 = new Nodo(5);
-        Nodo n6 = new Nodo(6);
-        Nodo n7 = new Nodo(7);
-        Nodo n8 = new Nodo(8);
-        Nodo n9 = new Nodo(9);
-        Nodo n10 = new Nodo(10);
+
+    /**
+     * Prueba la inserción y eliminación de vértices y aristas en grafos
+     * ponderados y no ponderados.
+     */
+    private static void probarGrafoDirigidoNoPonderado(){
+        Nodo<Integer> n1 = new Nodo<>(1);
+        Nodo<Integer> n2 = new Nodo<>(2);
+        Nodo<Integer> n3 = new Nodo<>(3);
+        Nodo<Integer> n4 = new Nodo<>(4);
+        Nodo<Integer> n5 = new Nodo<>(5);
+        Nodo<Integer> n6 = new Nodo<>(6);
+        Nodo<Integer> n7 = new Nodo<>(7);
+        Nodo<Integer> n8 = new Nodo<>(8);
+        Nodo<Integer> n9 = new Nodo<>(9);
+        Nodo<Integer> n10 = new Nodo<>(10);
         System.out.println("Prueba grafo no dirigido ponderado");
         
         //crear y establecer tipo de grafo
-        Grafo gndp = new Grafo(false, true);
+        Grafo<Nodo<Integer>> gndp = new Grafo<>(false, true);
         
         //insertar vertices
         System.out.println("Insertando vertices");
@@ -94,7 +105,7 @@ public class Grafo_261147 {
         
         System.out.println("Pruebas de grafo dirigido y no ponderado");
         
-        Grafo gdnp = new Grafo(true, false);
+        Grafo<Nodo<Integer>> gdnp = new Grafo<>(true, false);
         System.out.println("Insertando vertices n5, n6, n7, n8");
         
         gdnp.insertarVertice(n5);
@@ -122,19 +133,22 @@ public class Grafo_261147 {
         gndp.limpiar();
     }
     
-    private static void probarGrafoNoDirigidoPonderado() throws Exception{
-        Nodo n1 = new Nodo(1);
-        Nodo n2 = new Nodo(2);
-        Nodo n3 = new Nodo(3);
-        Nodo n4 = new Nodo(4);
-        Nodo n5 = new Nodo(5);
-        Nodo n6 = new Nodo(6);
-        Nodo n7 = new Nodo(7);
-        Nodo n8 = new Nodo(8);
-        Nodo n9 = new Nodo(9);
-        Nodo n10 = new Nodo(10);
+    /**
+     * Prueba los recorridos BFS y DFS en un grafo no dirigido ponderado.
+     */
+    private static void probarGrafoNoDirigidoPonderado(){
+        Nodo<Integer> n1 = new Nodo<>(1);
+        Nodo<Integer> n2 = new Nodo<>(2);
+        Nodo<Integer> n3 = new Nodo<>(3);
+        Nodo<Integer> n4 = new Nodo<>(4);
+        Nodo<Integer> n5 = new Nodo<>(5);
+        Nodo<Integer> n6 = new Nodo<>(6);
+        Nodo<Integer> n7 = new Nodo<>(7);
+        Nodo<Integer> n8 = new Nodo<>(8);
+        Nodo<Integer> n9 = new Nodo<>(9);
+        Nodo<Integer> n10 = new Nodo<>(10);
         System.out.println("Prueba de BFS y DFS");
-        Grafo gndp = new Grafo(false, true);
+        Grafo<Nodo<Integer>> gndp = new Grafo<>(false, true);
         
         gndp.insertarVertice(n1);
         gndp.insertarVertice(n2);
@@ -162,16 +176,19 @@ public class Grafo_261147 {
         
         System.out.println("\n");
         
-        gndp.BusquedaEnProfundidad(n6);
+        gndp.BusquedaEnProfundidad();
     }
     
-    private static void probarGrafoDirigidoPonderado() throws Exception{
-        Grafo gdp = new Grafo(true, true);
-        Nodo s = new Nodo("s");
-        Nodo t = new Nodo("t");
-        Nodo x = new Nodo("x");
-        Nodo y = new Nodo("y");
-        Nodo z = new Nodo("z");
+    /**
+     * Prueba el algoritmo de Dijkstra en un grafo dirigido y ponderado.
+     */
+    private static void probarGrafoDirigidoPonderado(){
+        Grafo<Nodo<String>> gdp = new Grafo<>(true, true);
+        Nodo<String> s = new Nodo<>("s");
+        Nodo<String> t = new Nodo<>("t");
+        Nodo<String> x = new Nodo<>("x");
+        Nodo<String> y = new Nodo<>("y");
+        Nodo<String> z = new Nodo<>("z");
         
         gdp.insertarVertice(s);
         gdp.insertarVertice(t);
@@ -191,26 +208,34 @@ public class Grafo_261147 {
         gdp.insertarArista(x, s, 7.0);
         
 
-        Double[] distancias = gdp.dijkstra(z);
-        for (int i = 0; i < distancias.length; i++) {
-            System.out.println(distancias[i] + "");
+        ResultadoCaminos<Nodo<String>> resultado = gdp.dijkstra(s);
+        List<Double> distancias = resultado.getDistancias();
+        List<Nodo<String>> predecesores = resultado.getPredecesores();
+        List<Nodo<String>> vertices = gdp.obtenerVertices();
+
+        for (int i = 0; i < distancias.size(); i++) {
+            System.out.println(vertices.get(i) + ": " + distancias.get(i)
+                    + " (predecesor: " + predecesores.get(i) + ")");
         }
-        
+
     }
 
-    private static void probarOrdenamientoTopologico() throws Exception {
-        Grafo gd = new Grafo(true, true);
+    /**
+     * Prueba el ordenamiento topológico y los caminos más cortos en un DAG.
+     */
+    private static void probarOrdenamientoTopologico() {
+        Grafo<Nodo<String>> gd = new Grafo<>(true, true);
 
-        Nodo a = new Nodo("A");
-        Nodo b = new Nodo("B");
-        Nodo c = new Nodo("C");
-        Nodo d = new Nodo("D");
-        Nodo e = new Nodo("E");
-        Nodo f = new Nodo("F");
-        Nodo g = new Nodo("G");
-        Nodo h = new Nodo("H");
-        Nodo i = new Nodo("I");
-        Nodo j = new Nodo("J");
+        Nodo<String> a = new Nodo<>("A");
+        Nodo<String> b = new Nodo<>("B");
+        Nodo<String> c = new Nodo<>("C");
+        Nodo<String> d = new Nodo<>("D");
+        Nodo<String> e = new Nodo<>("E");
+        Nodo<String> f = new Nodo<>("F");
+        Nodo<String> g = new Nodo<>("G");
+        Nodo<String> h = new Nodo<>("H");
+        Nodo<String> i = new Nodo<>("I");
+        Nodo<String> j = new Nodo<>("J");
 
         gd.insertarVertice(a);
         gd.insertarVertice(b);
@@ -235,21 +260,24 @@ public class Grafo_261147 {
         gd.insertarArista(i, j, 2);
         gd.insertarArista(d, h, 6);
 
-        List<Nodo> orden = gd.ordenamientoTopologico();
+        List<Nodo<String>> orden = gd.ordenamientoTopologico();
 
-        for(Nodo n : orden){
+        for (Nodo<String> n : orden) {
             System.out.println(n);
         }
 
-        double[] caminosMasCortos = gd.caminosMasCortosDAG(a);
+        ResultadoCaminos<Nodo<String>> resultado = gd.caminosMasCortosDAG(a);
+        List<Double> distancias = resultado.getDistancias();
+        List<Nodo<String>> predecesores = resultado.getPredecesores();
+        List<Nodo<String>> vertices = gd.obtenerVertices();
 
-        System.out.println("Caminos mas cortos desde el nodo: "+a);
-        for(int v = 0; v < caminosMasCortos.length; v++){
-            if(caminosMasCortos[v] == Double.MAX_VALUE){
-                System.out.println(orden.get(v) + ": nodo inalcanzable");
-            }else {
-                System.out.println(orden.get(v) + ": " + caminosMasCortos[v]);
-            }
+        System.out.println("Caminos mas cortos desde el nodo: " + a);
+        for (int v = 0; v < distancias.size(); v++) {
+            String distancia = distancias.get(v) == Double.MAX_VALUE
+                    ? "inalcanzable"
+                    : distancias.get(v).toString();
+            System.out.println(vertices.get(v) + ": " + distancia
+                    + " (predecesor: " + predecesores.get(v) + ")");
         }
 
     }
